@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이모님 근무기록표</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#2d6a4f;--primary-lt:#d8f3e8;--primary-dk:#1b4332;--surface:#ffffff;--bg:#f4f6f4;--border:#e0e4e0;--text:#1a1f1a;--text2:#5a6260;--text3:#9aa09a;--sun-bg:#fff5f5;--sun-text:#c0392b;--sat-bg:#f3f6ff;--sat-text:#2563be;--worked-bg:#f0faf5;--r:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.app-header{background:var(--primary-dk);padding:0 24px;}
+.header-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px;gap:16px;}
+.app-title{font-size:17px;font-weight:700;color:#fff;letter-spacing:-.02em;}
+.app-title span{font-size:12px;font-weight:400;opacity:.65;margin-left:8px;}
+.header-btns{display:flex;gap:8px;}
+.btn{font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:500;padding:7px 16px;border-radius:7px;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;}
+.btn-ghost{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.22);}
+.btn-ghost:hover{background:rgba(255,255,255,.22);}
+.controls-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:13px 24px;position:sticky;top:0;z-index:50;}
+.controls-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.month-nav{display:flex;align-items:center;gap:8px;}
+.nav-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(--text2);}
+.nav-btn:hover{background:var(--bg);}
+.month-label{font-size:19px;font-weight:700;letter-spacing:-.02em;min-width:120px;text-align:center;}
+.sep{width:1px;height:28px;background:var(--border);margin:0 4px;}
+.rate-wrap{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.rate-lbl{font-size:13px;color:var(--text2);}
+.rate-inp{font-family:'DM Mono',monospace;font-size:15px;font-weight:500;color:var(--primary);border:1px solid var(--border);border-radius:8px;padding:6px 10px;width:112px;outline:none;background:var(--bg);text-align:right;}
+.rate-inp:focus{border-color:var(--primary);background:#fff;}
+.rate-unit{font-size:13px;color:var(--text2);}
+.summary-area{max-width:900px;margin:20px auto 16px;padding:0 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+@media(max-width:680px){.summary-area{grid-template-columns:1fr 1fr;}}
+.sum-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;}
+.sum-card.accent{background:var(--primary-dk);border-color:var(--primary-dk);}
+.sum-lbl{font-size:11px;color:var(--text3);margin-bottom:6px;letter-spacing:.04em;}
+.sum-card.accent .sum-lbl{color:rgba(255,255,255,.6);}
+.sum-val{font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--text);}
+.sum-card.accent .sum-val{color:#fff;}
+.sum-sub{font-size:11px;color:var(--text3);margin-top:3px;}
+.sum-card.accent .sum-sub{color:rgba(255,255,255,.45);}
+.table-area{max-width:900px;margin:0 auto 48px;padding:0 24px;}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:520px;}
+thead th{background:var(--primary);color:#fff;font-size:12px;font-weight:500;letter-spacing:.04em;padding:11px 12px;text-align:center;border-right:1px solid rgba(255,255,255,.15);}
+thead th:last-child{border-right:none;}
+thead th.th-left{text-align:left;padding-left:16px;}
+tbody tr{border-bottom:1px solid var(--border);}
+tbody tr:last-child{border-bottom:none;}
+tbody tr.sunday{background:var(--sun-bg);}
+tbody tr.saturday{background:var(--sat-bg);}
+tbody tr.worked{background:var(--worked-bg);}
+tbody td{padding:8px 12px;text-align:center;font-size:13px;vertical-align:middle;border-right:1px solid var(--border);}
+tbody td:last-child{border-right:none;}
+tbody td.td-left{text-align:left;}
+.col-date{font-weight:700;font-family:'DM Mono',monospace;width:40px;}
+.col-dow{width:34px;}
+.sunday .col-dow{color:var(--sun-text);font-weight:700;}
+.saturday .col-dow{color:var(--sat-text);font-weight:700;}
+.hours-wrap{display:flex;align-items:center;justify-content:center;gap:4px;}
+.hours-inp{font-family:'DM Mono',monospace;font-size:15px;font-weight:500;color:var(--primary);text-align:center;border:1px solid var(--border);border-radius:7px;padding:6px 4px;width:68px;outline:none;background:var(--surface);}
+.hours-inp:focus{border-color:var(--primary);background:#f5fff9;}
+.hours-inp::placeholder{color:var(--text3);font-size:12px;font-weight:400;}
+.hours-unit{font-size:12px;color:var(--text3);}
+.col-pay{font-family:'DM Mono',monospace;font-weight:700;color:var(--primary-dk);width:115px;}
+.empty-dash{color:var(--text3);}
+.notes-inp{font-family:'Noto Sans KR',sans-serif;font-size:12px;border:1px solid transparent;border-radius:7px;padding:6px 10px;outline:none;background:transparent;color:var(--text2);width:100%;min-width:140px;}
+.notes-inp:focus{border-color:var(--border);background:#fff;}
+.notes-inp::placeholder{color:var(--text3);}
+.clear-btn{font-size:11px;padding:3px 8px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;}
+.clear-btn:hover{background:#fff0f0;color:#c0392b;border-color:#f0c0c0;}
+tfoot tr{background:var(--primary-lt);}
+tfoot td{padding:13px 12px;font-weight:700;font-size:14px;border-top:2px solid var(--primary);border-right:1px solid var(--border);text-align:center;color:var(--primary-dk);}
+tfoot td:last-child{border-right:none;}
+.foot-total{font-family:'DM Mono',monospace;font-size:17px;}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--primary-dk);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;}
+.toast.show{opacity:1;}
+@media print{
+  .controls-bar,.app-header{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .controls-bar{position:static;}
+  .btn-ghost,.header-btns,.rate-inp{display:none !important;}
+  body{background:#fff;}
+  .table-wrap{box-shadow:none;border:1px solid #ccc;}
+  .hours-inp,.notes-inp{border:none;pointer-events:none;background:transparent;}
+  .clear-btn{display:none;}
+  .toast{display:none;}
+}
+</style>
+</head>
+<body>
+<header class="app-header">
+  <div class="header-inner">
+    <div class="app-title">이모님 근무기록표<span>월별 근무시간 & 급여 계산</span></div>
+    <div class="header-btns">
+      <button class="btn btn-ghost" onclick="window.print()">🖨 인쇄 / PDF</button>
+      <button class="btn btn-ghost" onclick="clearMonth()">이달 초기화</button>
+    </div>
+  </div>
+</header>
+<div class="controls-bar">
+  <div class="controls-inner">
+    <div class="month-nav">
+      <button class="nav-btn" onclick="changeMonth(-1)">&#8249;</button>
+      <div class="month-label" id="monthLabel"></div>
+      <button class="nav-btn" onclick="changeMonth(1)">&#8250;</button>
+    </div>
+    <div class="sep"></div>
+    <div class="rate-wrap">
+      <span class="rate-lbl">시급</span>
+      <input class="rate-inp" type="number" id="hourlyRate" value="15000" step="500" min="0" onchange="onRateChange()">
+      <span class="rate-unit">원</span>
+    </div>
+  </div>
+</div>
+<div class="summary-area">
+  <div class="sum-card"><div class="sum-lbl">근무일수</div><div class="sum-val" id="sumDays">0일</div><div class="sum-sub">이번 달 출근일</div></div>
+  <div class="sum-card"><div class="sum-lbl">총 근무시간</div><div class="sum-val" id="sumHours">0시간</div><div class="sum-sub">이번 달 합계</div></div>
+  <div class="sum-card"><div class="sum-lbl">평균 일 근무시간</div><div class="sum-val" id="sumAvg">—</div><div class="sum-sub">근무일 기준</div></div>
+  <div class="sum-card accent"><div class="sum-lbl">이달 지급 금액</div><div class="sum-val" id="sumPay">0원</div><div class="sum-sub" id="sumPaySub">시급 15,000원 기준</div></div>
+</div>
+<div class="table-area">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>날짜</th><th>요일</th><th>근무시간</th><th>일급</th>
+          <th class="th-left">특이사항</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2">월 합계</td>
+          <td class="foot-total" id="footHours">—</td>
+          <td class="foot-total" id="footPay">—</td>
+          <td colspan="2" id="footNote" style="font-weight:400;font-size:12px;color:var(--primary);text-align:left;padding-left:16px;"></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const DAY_KO=['일','월','화','수','목','금','토'];
+const STORAGE_KEY='imomnim-v3';
+let state={year:new Date().getFullYear(),month:new Date().getMonth()+1,hourlyRate:15000,records:{}};
+function loadData(){try{const r=localStorage.getItem(STORAGE_KEY);if(r){const d=JSON.parse(r);if(d.hourlyRate)state.hourlyRate=d.hourlyRate;if(d.records)state.records=d.records;}}catch(e){}}
+function saveData(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({hourlyRate:state.hourlyRate,records:state.records}));}catch(e){}showToast('저장됨 ✓');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),1600);}
+function dateKey(y,m,d){return`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
+function getDays(y,m){return new Date(y,m,0).getDate();}
+function getDow(y,m,d){return new Date(y,m-1,d).getDay();}
+function fmtH(h){if(!h||h<=0)return null;const ih=Math.floor(h),im=Math.round((h-ih)*60);return im===0?`${ih}시간`:`${ih}시간 ${im}분`;}
+function renderMonth(){
+  const y=state.year,m=state.month,rate=state.hourlyRate,days=getDays(y,m);
+  document.getElementById('monthLabel').textContent=`${y}년 ${m}월`;
+  document.getElementById('hourlyRate').value=rate;
+  let totH=0,workD=0,rows='';
+  for(let d=1;d<=days;d++){
+    const key=dateKey(y,m,d),dow=getDow(y,m,d);
+    const rec=state.records[key]||{hours:'',notes:''};
+    const h=parseFloat(rec.hours)||0,worked=h>0;
+    if(worked){totH+=h;workD++;}
+    const pay=worked?Math.round(h*rate):0;
+    const rc=[dow===0?'sunday':dow===6?'saturday':'',worked?'worked':''].filter(Boolean).join(' ');
+    const hint=dow===0||dow===6?'휴무':'특이사항';
+    rows+=`<tr class="${rc}">
+      <td class="col-date">${d}</td>
+      <td class="col-dow">${DAY_KO[dow]}</td>
+      <td><div class="hours-wrap">
+        <input class="hours-inp" type="number" min="0" max="24" step="0.5"
+          placeholder="0" value="${rec.hours!==''?rec.hours:''}"
+          data-key="${key}" data-field="hours"
+          onchange="updateRec(this)" oninput="updateRec(this)">
+        <span class="hours-unit">시간</span>
+      </div></td>
+      <td class="col-pay">${worked?pay.toLocaleString()+'원':'<span class="empty-dash">—</span>'}</td>
+      <td class="td-left">
+        <input class="notes-inp" type="text" placeholder="${hint}"
+          value="${(rec.notes||'').replace(/"/g,'&quot;')}"
+          data-key="${key}" data-field="notes" onchange="updateRec(this)">
+      </td>
+      <td style="width:52px;">${worked?`<button class="clear-btn" onclick="clearRow('${key}')">삭제</button>`:''}</td>
+    </tr>`;
+  }
+  document.getElementById('tbody').innerHTML=rows;
+  const totalPay=Math.round(totH*rate),avg=workD>0?totH/workD:0;
+  const ih=Math.floor(totH),im=Math.round((totH-ih)*60);
+  const totStr=im>0?`${ih}h ${im}m`:`${ih}시간`;
+  document.getElementById('sumDays').textContent=workD+'일';
+  document.getElementById('sumHours').textContent=totH>0?totStr:'0시간';
+  document.getElementById('sumAvg').textContent=avg>0?(fmtH(avg)||'—'):'—';
+  document.getElementById('sumPay').textContent=totalPay>0?totalPay.toLocaleString()+'원':'0원';
+  document.getElementById('sumPaySub').textContent='시급 '+rate.toLocaleString()+'원 기준';
+  document.getElementById('footHours').textContent=totH>0?totStr:'—';
+  document.getElementById('footPay').textContent=totalPay>0?totalPay.toLocaleString()+'원':'—';
+  document.getElementById('footNote').textContent=workD>0?`총 ${workD}일 근무`:'';
+}
+function updateRec(el){
+  const key=el.dataset.key,field=el.dataset.field;
+  if(!state.records[key])state.records[key]={hours:'',notes:''};
+  state.records[key][field]=el.value;
+  const r=state.records[key];
+  if(!r.hours&&!r.notes)delete state.records[key];
+  saveData();renderMonth();
+}
+function clearRow(key){delete state.records[key];saveData();renderMonth();}
+function changeMonth(d){state.month+=d;if(state.month>12){state.month=1;state.year++;}if(state.month<1){state.month=12;state.year--;}renderMonth();}
+function onRateChange(){state.hourlyRate=parseInt(document.getElementById('hourlyRate').value)||15000;saveData();renderMonth();}
+function clearMonth(){if(!confirm(`${state.year}년 ${state.month}월 기록을 모두 삭제할까요?`))return;const p=`${state.year}-${String(state.month).padStart(2,'0')}`;Object.keys(state.records).forEach(k=>{if(k.startsWith(p))delete state.records[k];});saveData();renderMonth();}
+loadData();renderMonth();
+</script>
+</body>
+</html>
